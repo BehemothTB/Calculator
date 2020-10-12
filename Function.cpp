@@ -6,7 +6,9 @@ Function::Function()
 	head = new Element;
 	pnew = head;
 	IsCorrect = true;
-	
+	p1 = p2 = pcal = NULL;
+	max = min = x = y = 0;
+	count = 0;
 }
 
 Function::~Function()
@@ -20,8 +22,8 @@ Function::~Function()
 	}
 }
 
-// //设置一个新的元素
-void Function::SetElement(Element ele)
+
+void Function::SetElement(Element_ ele)
 {
 	// TODO: 在此处添加实现代码.
 
@@ -34,7 +36,6 @@ void Function::SetElement(Element ele)
 }
 
 
-// 定位最小括号位置
 void Function::Locate()
 {
 	// TODO: 在此处添加实现代码.
@@ -78,8 +79,20 @@ void Function::Calculate()
 
 	switch (pcal->cal)
 	{
-
+	case LOG:this->LogCal();
+	case POWER:this->PowerCal();
+	case SQRT:this->SqrtCal();
+	case MULTI:this->MultiCal();
+	case DEVIDE:this->DevideCal();
+	case PLUS:this->PlusCal();
+	case MINUS:this->MinusCal();
 	}
+
+	Element* pdel;
+	pcal->cal = pcal->next->cal;
+	pdel = pcal->next;
+	pcal->next = pcal->next->next;
+	delete pdel;
 
 }
 
@@ -88,9 +101,13 @@ void Function::LogCal()
 {
 	// TODO: 在此处添加实现代码.
 
+	if (pcal->number < 0 || pcal->next->number < 0 || pcal->next->number == 1)
+	{
+		IsCorrect = false;
+		return;
+	}
+
 	pcal->number = log(pcal->next->number) / log(pcal->number);
-	pcal->cal = pcal->next->cal;
-	pcal->next = pcal->next->next;
 
 }
 
@@ -100,7 +117,145 @@ void Function::PowerCal()
 	// TODO: 在此处添加实现代码.
 
 	pcal->number = pow(pcal->number, int(pcal->next->number));
-	pcal->cal = pcal->next->cal;
-	pcal->next = pcal->next->next;
+
+}
+
+
+void Function::SqrtCal()
+{
+	// TODO: 在此处添加实现代码.
+
+	if (pcal->next->number < 0)
+	{
+		IsCorrect = false;
+		return;
+	}
+
+	pcal->number = sqrt(pcal->next->number);
+
+}
+
+
+void Function::MultiCal()
+{
+	// TODO: 在此处添加实现代码.
+
+	pcal->number *= pcal->next->number;
+
+}
+
+
+void Function::DevideCal()
+{
+	// TODO: 在此处添加实现代码.
+
+	if (pcal->next->number == 0)
+	{
+		IsCorrect = false;
+		return;
+	}
+
+	pcal->number /= pcal->next->number;
+
+}
+
+
+void Function::PlusCal()
+{
+	// TODO: 在此处添加实现代码.
+
+	pcal->number += pcal->next->number;
+
+}
+
+
+void Function::MinusCal()
+{
+	// TODO: 在此处添加实现代码.
+
+	pcal->number -= pcal->next->number;
+
+}
+
+
+bool Function::GetAnswer()
+{
+	// TODO: 在此处添加实现代码.
+
+	for (; head->next;)
+	{
+		this->Locate();
+		if (IsCorrect == false)
+		{
+			return false;
+		}
+
+		for (int cal = LOG; cal <= MINUS; cal++)
+		{
+			for (pcal = p1; pcal != p2; pcal = pcal->next)
+			{
+				if (pcal->cal == cal)
+				{
+					if (pcal->next == p2)
+					{
+						p2 = pcal;
+					}
+					this->Calculate();
+					if (IsCorrect == false)
+					{
+						return false;
+					}
+					if (p2 == pcal)
+					{
+						pcal->bracket = RBRACKET;
+						break;
+					}
+				}
+			}
+		}
+
+		p1->bracket = NBRACKET;
+		p2->bracket = NBRACKET;
+
+	}
+
+	y = head->number;
+
+	return true;
+
+}
+
+
+void Function::SetSection(double min, double max)
+{
+	// TODO: 在此处添加实现代码.
+
+	this->min = min;
+	this->max = max;
+
+}
+
+
+void Function::LoadBackup()
+{
+	// TODO: 在此处添加实现代码.
+
+	pnew = head;
+	for (int i = 0; i < count; i++)
+	{
+		this->SetElement(backup[i]);
+	}
+
+}
+
+
+void Function::SetElement_(Element_ ele)
+{
+	// TODO: 在此处添加实现代码.
+
+	backup[count].number = ele.number;
+	backup[count].cal = ele.cal;
+	backup[count].bracket = ele.bracket;
+	count++;
 
 }

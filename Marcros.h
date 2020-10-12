@@ -8,6 +8,7 @@
 #define DEVIDE			(4)
 #define PLUS			(5)
 #define MINUS			(6)
+#define EQUAL			(7)
 
 //À¨ºÅ¾ä±ú
 #define NBRACKET		(0)
