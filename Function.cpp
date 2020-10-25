@@ -7,8 +7,10 @@ Function::Function()
 	pnew = head;
 	IsCorrect = true;
 	p1 = p2 = pcal = NULL;
-	max = min = x = y = 0;
+	max = min = 0;
+	x = y = 0;
 	count = 0;
+	sumxy = sumy = 0;
 }
 
 Function::~Function()
@@ -27,7 +29,7 @@ void Function::SetElement(Element_ ele)
 {
 	// TODO: 在此处添加实现代码.
 
-	pnew->number = ele.number;
+	pnew->number = ele.IsX ? this->x : ele.number;
 	pnew->cal = ele.cal;
 	pnew->bracket = ele.bracket;
 	pnew->next = new Element;
@@ -82,6 +84,8 @@ void Function::Calculate()
 	case LOG:this->LogCal();
 	case POWER:this->PowerCal();
 	case SQRT:this->SqrtCal();
+	case COS:this->CosCal();
+	case SIN:this->SinCal();
 	case MULTI:this->MultiCal();
 	case DEVIDE:this->DevideCal();
 	case PLUS:this->PlusCal();
@@ -190,7 +194,7 @@ bool Function::GetAnswer()
 			return false;
 		}
 
-		for (int cal = LOG; cal <= MINUS; cal++)
+		for (int cal = LOG; cal <= PLUS; cal++)
 		{
 			for (pcal = p1; pcal != p2; pcal = pcal->next)
 			{
@@ -220,13 +224,15 @@ bool Function::GetAnswer()
 	}
 
 	y = head->number;
+	sumxy += x * y;
+	sumy += y;
 
 	return true;
 
 }
 
 
-void Function::SetSection(double min, double max)
+void Function::SetSection(int min, int max)
 {
 	// TODO: 在此处添加实现代码.
 
@@ -256,6 +262,97 @@ void Function::SetElement_(Element_ ele)
 	backup[count].number = ele.number;
 	backup[count].cal = ele.cal;
 	backup[count].bracket = ele.bracket;
+	backup[count].IsX = ele.IsX;
 	count++;
+
+}
+
+
+void Function::CosCal()
+{
+	// TODO: 在此处添加实现代码.
+
+	pcal->number = cos(pcal->next->number);
+
+}
+
+
+void Function::SinCal()
+{
+	// TODO: 在此处添加实现代码.
+
+	pcal->number = sin(pcal->next->number);
+
+}
+
+
+void Function::LoadText(const char* text)
+{
+	// TODO: 在此处添加实现代码.
+
+	Element_ ele;
+	ele.number = 0;
+	ele.cal = -1;
+	ele.bracket = NBRACKET;
+	ele.IsX = false;
+
+	for (int i = 0;; i++)
+	{
+		switch (*(text + i))
+		{
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':ele.number = ele.number * 10 + *(text + i) - 10; break;
+		case 'L':ele.cal = LOG; break;
+		case '^':ele.cal = POWER; break;
+		case '#':ele.cal = SQRT, ele.number = 0, ele.IsX = false; break;
+		case 'C':ele.cal = COS, ele.number = 0, ele.IsX = false; break;
+		case 'S':ele.cal = SIN, ele.number = 0, ele.IsX = false; break;
+		case '/':ele.cal = DEVIDE; break;
+		case '*':ele.cal = MULTI; break;
+		case '-':ele.cal = MINUS; break;
+		case '+':ele.cal = PLUS; break;
+		case '(':ele.bracket = LBRACKET; break;
+		case ')':ele.bracket = RBRACKET; break;
+		case 'X':ele.number = 0, ele.IsX = true; break;
+		case '\0':ele.cal = EQUAL; break;
+		default:this->IsCorrect = false;
+		}
+
+		if (ele.cal != -1)
+		{
+			this->SetElement_(ele);
+			if (ele.cal == EQUAL)
+			{
+				break;
+			}
+			ele.number = 0;
+			ele.cal = -1;
+			ele.bracket = NBRACKET;
+			ele.IsX = false;
+		}
+
+	}
+
+}
+
+
+double Function::GetCentroid()
+{
+	// TODO: 在此处添加实现代码.
+
+	if (sumy == 0)
+	{
+		return -1;
+	}
+
+	return (sumxy / sumy);
 
 }

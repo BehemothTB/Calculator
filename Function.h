@@ -16,6 +16,7 @@ struct Element_
 	double number;
 	int cal;
 	int bracket;
+	bool IsX;
 };
 
 class Function
@@ -24,7 +25,9 @@ protected:
 	Element* head, * pnew, * p1, * p2, * pcal;
 	Element_ backup[100];
 	int count;
-	double min, max, x, y;
+	double x, y;
+	double sumxy, sumy;
+	int min, max;
 	bool IsCorrect;
 
 public:
@@ -42,8 +45,12 @@ public:
 	void PlusCal();
 	void MinusCal();
 	bool GetAnswer();
-	void SetSection(double min, double max);
+	void SetSection(int min, int max);
 	void LoadBackup();
 	void SetElement_(Element_ ele);
+	void CosCal();
+	void SinCal();
+	void LoadText(const char* text);
+	double GetCentroid();
 };
 
