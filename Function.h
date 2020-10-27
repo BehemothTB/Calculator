@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pch.h"
+#include "Marcros.h"
 #include <cmath>
 
 struct Element
@@ -22,17 +22,17 @@ struct Element_
 class Function
 {
 protected:
-	Element* head, * pnew, * p1, * p2, * pcal;
+	Element* head, * pnew, * pold, * p1, * p2, * pcal;
 	Element_ backup[100];
 	int count;
 	double x, y;
-	double sumxy, sumy;
-	int min, max;
 	bool IsCorrect;
 
 public:
 	Function();
 	~Function();
+
+	friend class CCalculatorDlg;
 	
 	void SetElement(Element_ ele);
 	void Locate();
@@ -45,12 +45,10 @@ public:
 	void PlusCal();
 	void MinusCal();
 	bool GetAnswer();
-	void SetSection(int min, int max);
 	void LoadBackup();
 	void SetElement_(Element_ ele);
 	void CosCal();
 	void SinCal();
 	void LoadText(const char* text);
-	double GetCentroid();
 };
 

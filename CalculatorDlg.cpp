@@ -31,6 +31,7 @@ public:
 // 实现
 protected:
 	DECLARE_MESSAGE_MAP()
+//	CWnd* pWait;
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
@@ -54,17 +55,32 @@ CCalculatorDlg::CCalculatorDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_CALCULATOR_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	min = 0.0;
+	max = 0.0;
+	sumxy = 0.0;
+	sumy = 0.0;
+	locate = 0.0;
 }
 
 void CCalculatorDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	//  DDX_Control(pDX, IDC_EDITFX, edit_fx);
+	DDX_Control(pDX, IDC_EDITFX, edit_fx);
+	//  DDX_Control(pDX, IDC_MAX, edit_max);
+	//  DDX_Control(pDX, IDC_MIN, edit_min);
+	//  DDX_Control(pDX, IDC_ANSWERX, edit_locate);
+	//  DDX_Control(pDX, IDC_ANSWERY, edit_force);
 }
 
 BEGIN_MESSAGE_MAP(CCalculatorDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_CREATE()
+//	ON_STN_ENABLE(IDC_WAITING, &CCalculatorDlg::OnEnableWaiting)
+ON_WM_TIMER()
+ON_BN_CLICKED(IDC_BUTTONCAL, &CCalculatorDlg::OnClickedButtoncal)
 END_MESSAGE_MAP()
 
 
@@ -153,3 +169,84 @@ HCURSOR CCalculatorDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+int CCalculatorDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CDialogEx::OnCreate(lpCreateStruct) == -1)
+		return -1;
+
+	// TODO:  在此添加您专用的创建代码
+
+	this->SetTimer(WAITING_INITTIMER, WAITING_INITTICK, NULL);
+
+	return 0;
+}
+
+
+void CCalculatorDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	if ((nIDEvent == WAITING_INITTIMER) && (pWait = this->GetDlgItem(IDC_WAITING)))
+	{
+		pWait->SetWindowPos(NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOMOVE | SWP_HIDEWINDOW);
+		this->KillTimer(WAITING_INITTIMER);
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CCalculatorDlg::OnClickedButtoncal()
+{
+	// TODO: 在此添加控件通知处理程序代码
+
+	CString str_fx, str_locate, str_force;
+	char* text;
+	
+	edit_fx.GetWindowTextW(str_fx);
+	text = (LPSTR)(LPCTSTR)str_fx;
+	
+	if (function)
+	{
+		delete function;
+	}
+	
+	sumxy = sumy = 0;
+	
+	function = new Function;
+	function->LoadText(text);
+	max = this->GetDlgItemInt(IDC_MAX, 0, 1);
+	min = this->GetDlgItemInt(IDC_MIN, 0, 1);
+	
+	this->Calculate();
+
+	std::stringstream ss;
+	ss << locate;
+	str_locate = ss.str().c_str();
+	ss << sumy;
+	str_force = ss.str().c_str();
+
+	this->SetDlgItemTextW(IDC_ANSWERX, str_locate);
+	this->SetDlgItemTextW(IDC_ANSWERY, str_force);
+
+}
+
+
+void CCalculatorDlg::Calculate()
+{
+	// TODO: 在此处添加实现代码.
+
+	double x;
+	double diff = (max - min) / DENOMINATOR;
+	for (x = min; x <= max; x += diff)
+	{
+		function->x = x;
+		function->LoadBackup();
+		function->GetAnswer();
+		sumxy += x * function->y * diff;
+		sumy += function->y * diff;
+	}
+	locate = sumxy / sumy;
+}

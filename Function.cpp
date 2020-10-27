@@ -7,10 +7,8 @@ Function::Function()
 	pnew = head;
 	IsCorrect = true;
 	p1 = p2 = pcal = NULL;
-	max = min = 0;
 	x = y = 0;
 	count = 0;
-	sumxy = sumy = 0;
 }
 
 Function::~Function()
@@ -33,6 +31,7 @@ void Function::SetElement(Element_ ele)
 	pnew->cal = ele.cal;
 	pnew->bracket = ele.bracket;
 	pnew->next = new Element;
+	pold = pnew;
 	pnew = pnew->next;
 
 }
@@ -42,7 +41,7 @@ void Function::Locate()
 {
 	// TODO: 在此处添加实现代码.
 	p1 = head;
-	for (;p1->next;)
+	for (; p1->next;)
 	{
 		if (p1->bracket == LBRACKET)
 		{
@@ -81,15 +80,15 @@ void Function::Calculate()
 
 	switch (pcal->cal)
 	{
-	case LOG:this->LogCal();
-	case POWER:this->PowerCal();
-	case SQRT:this->SqrtCal();
-	case COS:this->CosCal();
-	case SIN:this->SinCal();
-	case MULTI:this->MultiCal();
-	case DEVIDE:this->DevideCal();
-	case PLUS:this->PlusCal();
-	case MINUS:this->MinusCal();
+	case LOG:this->LogCal(); break;
+	case POWER:this->PowerCal(); break;
+	case SQRT:this->SqrtCal(); break;
+	case COS:this->CosCal(); break;
+	case SIN:this->SinCal(); break;
+	case MULTI:this->MultiCal(); break;
+	case DEVIDE:this->DevideCal(); break;
+	case PLUS:this->PlusCal(); break;
+	case MINUS:this->MinusCal(); break;
 	}
 
 	Element* pdel;
@@ -224,20 +223,8 @@ bool Function::GetAnswer()
 	}
 
 	y = head->number;
-	sumxy += x * y;
-	sumy += y;
 
 	return true;
-
-}
-
-
-void Function::SetSection(int min, int max)
-{
-	// TODO: 在此处添加实现代码.
-
-	this->min = min;
-	this->max = max;
 
 }
 
@@ -251,7 +238,8 @@ void Function::LoadBackup()
 	{
 		this->SetElement(backup[i]);
 	}
-
+	delete pnew;
+	pold->next = NULL;
 }
 
 
@@ -309,7 +297,7 @@ void Function::LoadText(const char* text)
 		case '6':
 		case '7':
 		case '8':
-		case '9':ele.number = ele.number * 10 + *(text + i) - 10; break;
+		case '9':ele.number = ele.number * 10 + *(text + i) - '0'; break;
 		case 'L':ele.cal = LOG; break;
 		case '^':ele.cal = POWER; break;
 		case '#':ele.cal = SQRT, ele.number = 0, ele.IsX = false; break;
@@ -340,19 +328,5 @@ void Function::LoadText(const char* text)
 		}
 
 	}
-
-}
-
-
-double Function::GetCentroid()
-{
-	// TODO: 在此处添加实现代码.
-
-	if (sumy == 0)
-	{
-		return -1;
-	}
-
-	return (sumxy / sumy);
 
 }
