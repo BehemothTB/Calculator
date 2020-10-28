@@ -24,4 +24,4 @@
 #define WAITING_INITTICK	(1)
 
 //积分次数
-#define DENOMINATOR			(100)
+#define DENOMINATOR			(1000000)

@@ -4,6 +4,7 @@
 
 #include "Function.h"
 #include <sstream>
+#include <cstring>
 
 #pragma once
 

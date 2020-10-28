@@ -202,11 +202,14 @@ void CCalculatorDlg::OnClickedButtoncal()
 {
 	// TODO: 在此添加控件通知处理程序代码
 
+	pWait->SetWindowPos(NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOMOVE | SWP_SHOWWINDOW);
+
 	CString str_fx, str_locate, str_force;
 	char* text;
 	
 	edit_fx.GetWindowTextW(str_fx);
-	text = (LPSTR)(LPCTSTR)str_fx;
+	USES_CONVERSION;
+	text = T2A(str_fx);
 	
 	if (function)
 	{
@@ -225,11 +228,15 @@ void CCalculatorDlg::OnClickedButtoncal()
 	std::stringstream ss;
 	ss << locate;
 	str_locate = ss.str().c_str();
+	ss.str("");
 	ss << sumy;
 	str_force = ss.str().c_str();
+	ss.str("");
 
 	this->SetDlgItemTextW(IDC_ANSWERX, str_locate);
 	this->SetDlgItemTextW(IDC_ANSWERY, str_force);
+
+	pWait->SetWindowPos(NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOMOVE | SWP_HIDEWINDOW);
 
 }
 
