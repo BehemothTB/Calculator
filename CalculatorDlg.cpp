@@ -220,8 +220,12 @@ void CCalculatorDlg::OnClickedButtoncal()
 	
 	function = new Function;
 	function->LoadText(text);
-	max = this->GetDlgItemInt(IDC_MAX, 0, 1);
-	min = this->GetDlgItemInt(IDC_MIN, 0, 1);
+
+	CString cs_max, cs_min;
+	this->GetDlgItemTextW(IDC_MAX, cs_max);
+	max = _tstof(cs_max);
+	this->GetDlgItemTextW(IDC_MIN, cs_min);
+	min = _tstof(cs_min);
 	
 	this->Calculate();
 
