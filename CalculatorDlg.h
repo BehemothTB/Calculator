@@ -59,4 +59,9 @@ protected:
 public:
 //	CStatic edit_locate;
 //	CStatic edit_force;
+protected:
+//	afx_msg LRESULT OnWaitingHide(WPARAM wParam, LPARAM lParam);
+//	afx_msg LRESULT OnWaitingDeal(WPARAM wParam, LPARAM lParam);
+public:
+	void Run();
 };

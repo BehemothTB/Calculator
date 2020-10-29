@@ -6,6 +6,7 @@
 #define IDD_ABOUTBOX                    100
 #define IDS_ABOUTBOX                    101
 #define IDD_CALCULATOR_DIALOG           102
+#define WAITING_DEAL                    102
 #define IDR_MAINFRAME                   128
 #define IDC_EDITFX                      1003
 #define IDC_MIN                         1004

@@ -29,7 +29,8 @@ void Function::SetElement(Element_ ele)
 
 	pnew->number = ele.IsX ? this->x : ele.number;
 	pnew->cal = ele.cal;
-	pnew->bracket = ele.bracket;
+	pnew->lbracket = ele.lbracket;
+	pnew->rbracket = ele.rbracket;
 	pnew->next = new Element;
 	pold = pnew;
 	pnew = pnew->next;
@@ -43,7 +44,7 @@ void Function::Locate()
 	p1 = head;
 	for (; p1->next;)
 	{
-		if (p1->bracket == LBRACKET)
+		if (p1->lbracket)
 		{
 			p2 = p1->next;
 			goto loop;
@@ -58,11 +59,11 @@ void Function::Locate()
 loop:
 	for (; p2;)
 	{
-		if (p2->bracket == LBRACKET)
+		if (p2->lbracket)
 		{
 			p1 = p2;
 		}
-		else if (p2->bracket == RBRACKET)
+		if (p2->rbracket)
 		{
 			return;
 		}
@@ -199,9 +200,11 @@ bool Function::GetAnswer()
 			{
 				if (pcal->cal == cal)
 				{
+					int rb = 0;
 					if (pcal->next == p2)
 					{
 						p2 = pcal;
+						rb = p2->rbracket;
 					}
 					this->Calculate();
 					if (IsCorrect == false)
@@ -210,15 +213,15 @@ bool Function::GetAnswer()
 					}
 					if (p2 == pcal)
 					{
-						pcal->bracket = RBRACKET;
+						pcal->rbracket = rb;
 						break;
 					}
 				}
 			}
 		}
 
-		p1->bracket = NBRACKET;
-		p2->bracket = NBRACKET;
+		p1->lbracket--;
+		p2->rbracket--;
 
 	}
 
@@ -249,7 +252,8 @@ void Function::SetElement_(Element_ ele)
 
 	backup[count].number = ele.number;
 	backup[count].cal = ele.cal;
-	backup[count].bracket = ele.bracket;
+	backup[count].lbracket = ele.lbracket;
+	backup[count].rbracket = ele.rbracket;
 	backup[count].IsX = ele.IsX;
 	count++;
 
@@ -281,7 +285,8 @@ void Function::LoadText(const char* text)
 	Element_ ele;
 	ele.number = 0;
 	ele.cal = -1;
-	ele.bracket = NBRACKET;
+	ele.lbracket = 0;
+	ele.rbracket = 0;
 	ele.IsX = false;
 
 	for (int i = 0;; i++)
@@ -307,8 +312,8 @@ void Function::LoadText(const char* text)
 		case '*':ele.cal = MULTI; break;
 		case '-':ele.cal = MINUS; break;
 		case '+':ele.cal = PLUS; break;
-		case '(':ele.bracket = LBRACKET; break;
-		case ')':ele.bracket = RBRACKET; break;
+		case '(':ele.lbracket++; break;
+		case ')':ele.rbracket++; break;
 		case 'X':ele.number = 0, ele.IsX = true; break;
 		case '\0':ele.cal = EQUAL; break;
 		default:this->IsCorrect = false;
@@ -323,7 +328,8 @@ void Function::LoadText(const char* text)
 			}
 			ele.number = 0;
 			ele.cal = -1;
-			ele.bracket = NBRACKET;
+			ele.lbracket = 0;
+			ele.rbracket = 0;
 			ele.IsX = false;
 		}
 

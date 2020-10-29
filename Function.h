@@ -7,7 +7,8 @@ struct Element
 {
 	double number;
 	int cal;
-	int bracket;
+	int lbracket;
+	int rbracket;
 	Element* next;
 };
 
@@ -15,7 +16,8 @@ struct Element_
 {
 	double number;
 	int cal;
-	int bracket;
+	int lbracket;
+	int rbracket;
 	bool IsX;
 };
 

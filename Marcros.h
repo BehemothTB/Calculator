@@ -19,9 +19,11 @@
 
 //计时器
 #define WAITING_INITTIMER	(0)
+#define CALCULATE_TIMER		(1)
 
 //计时刻
 #define WAITING_INITTICK	(1)
+#define CALCULATE_TICK		(10)
 
 //积分次数
-#define DENOMINATOR			(1000000)
+#define DENOMINATOR			(10000000)

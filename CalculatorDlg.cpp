@@ -60,6 +60,8 @@ CCalculatorDlg::CCalculatorDlg(CWnd* pParent /*=nullptr*/)
 	sumxy = 0.0;
 	sumy = 0.0;
 	locate = 0.0;
+	pWait = NULL;
+	function = NULL;
 }
 
 void CCalculatorDlg::DoDataExchange(CDataExchange* pDX)
@@ -81,6 +83,8 @@ BEGIN_MESSAGE_MAP(CCalculatorDlg, CDialogEx)
 //	ON_STN_ENABLE(IDC_WAITING, &CCalculatorDlg::OnEnableWaiting)
 ON_WM_TIMER()
 ON_BN_CLICKED(IDC_BUTTONCAL, &CCalculatorDlg::OnClickedButtoncal)
+//ON_MESSAGE(WAITING_HIDE, &CCalculatorDlg::OnWaitingHide)
+//ON_MESSAGE(WAITING_DEAL, &CCalculatorDlg::OnWaitingDeal)
 END_MESSAGE_MAP()
 
 
@@ -190,8 +194,14 @@ void CCalculatorDlg::OnTimer(UINT_PTR nIDEvent)
 
 	if ((nIDEvent == WAITING_INITTIMER) && (pWait = this->GetDlgItem(IDC_WAITING)))
 	{
-		pWait->SetWindowPos(NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOMOVE | SWP_HIDEWINDOW);
+		pWait->SetWindowPos(NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOMOVE | SWP_HIDEWINDOW);
 		this->KillTimer(WAITING_INITTIMER);
+	}
+
+	if (nIDEvent == CALCULATE_TIMER)
+	{
+		this->Run();
+		this->KillTimer(CALCULATE_TIMER);
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -202,45 +212,9 @@ void CCalculatorDlg::OnClickedButtoncal()
 {
 	// TODO: 在此添加控件通知处理程序代码
 
-	pWait->SetWindowPos(NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOMOVE | SWP_SHOWWINDOW);
+	pWait->SetWindowPos(NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOMOVE | SWP_SHOWWINDOW);
 
-	CString str_fx, str_locate, str_force;
-	char* text;
-	
-	edit_fx.GetWindowTextW(str_fx);
-	USES_CONVERSION;
-	text = T2A(str_fx);
-	
-	if (function)
-	{
-		delete function;
-	}
-	
-	sumxy = sumy = 0;
-	
-	function = new Function;
-	function->LoadText(text);
-
-	CString cs_max, cs_min;
-	this->GetDlgItemTextW(IDC_MAX, cs_max);
-	max = _tstof(cs_max);
-	this->GetDlgItemTextW(IDC_MIN, cs_min);
-	min = _tstof(cs_min);
-	
-	this->Calculate();
-
-	std::stringstream ss;
-	ss << locate;
-	str_locate = ss.str().c_str();
-	ss.str("");
-	ss << sumy;
-	str_force = ss.str().c_str();
-	ss.str("");
-
-	this->SetDlgItemTextW(IDC_ANSWERX, str_locate);
-	this->SetDlgItemTextW(IDC_ANSWERY, str_force);
-
-	pWait->SetWindowPos(NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOMOVE | SWP_HIDEWINDOW);
+	this->SetTimer(CALCULATE_TIMER, CALCULATE_TICK, NULL);
 
 }
 
@@ -260,4 +234,49 @@ void CCalculatorDlg::Calculate()
 		sumy += function->y * diff;
 	}
 	locate = sumxy / sumy;
+}
+
+
+void CCalculatorDlg::Run()
+{
+	// TODO: 在此处添加实现代码.
+
+	CString str_fx, str_locate, str_force;
+	char* text;
+
+	edit_fx.GetWindowTextW(str_fx);
+	USES_CONVERSION;
+	text = W2A(str_fx);
+
+	if (function)
+	{
+		delete function;
+	}
+
+	sumxy = sumy = 0;
+
+	function = new Function;
+	function->LoadText(text);
+
+	CString cs_max, cs_min;
+	this->GetDlgItemTextW(IDC_MAX, cs_max);
+	max = _tstof(cs_max);
+	this->GetDlgItemTextW(IDC_MIN, cs_min);
+	min = _tstof(cs_min);
+
+	this->Calculate();
+
+	std::stringstream ss;
+	ss << locate;
+	str_locate = ss.str().c_str();
+	ss.str("");
+	ss << sumy;
+	str_force = ss.str().c_str();
+	ss.str("");
+
+	this->SetDlgItemTextW(IDC_ANSWERX, str_locate);
+	this->SetDlgItemTextW(IDC_ANSWERY, str_force);
+
+	pWait->SetWindowPos(NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOMOVE | SWP_HIDEWINDOW);
+
 }
